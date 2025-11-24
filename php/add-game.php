@@ -1,22 +1,30 @@
 <?php
-	// Read values from the form
-	$game_name = $_POST['GameName'];
-	$game_description = $_POST['GameDescription'];
-	$game_release_date = $_POST['DateReleased'];
-	$game_rating = $_POST['GameRating'];
+include("db.php"); // database connection
 
-	// Connect to database
-	include("db.php");
+// Only run if form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-	// Build SQL statement
-	$sql = "INSERT INTO videogames(game_name, game_desc, released_date, rating)
-	VALUE('{$game_name}', '{$game_description}', '{$game_release_date}', '{$game_rating}')";
+    // Read and sanitize values from form
+    $game_name = isset($_POST['GameName']) ? $mysqli->real_escape_string($_POST['GameName']) : '';
+    $game_description = isset($_POST['GameDescription']) ? $mysqli->real_escape_string($_POST['GameDescription']) : '';
+    $released_date = isset($_POST['DateReleased']) ? $_POST['DateReleased'] : null; // YYYY-MM-DD
+    $game_rating = isset($_POST['GameRating']) ? $mysqli->real_escape_string($_POST['GameRating']) : '';
+    $genre = isset($_POST['GameGenre']) ? $mysqli->real_escape_string($_POST['GameGenre']) : '';
 
-	// Run SQL statement and report errors
-	if(!$mysqli -> query($sql)) {
-		echo("<h4>SQL error description: " . $mysqli -> error . "</h4>");
-	}
+    // Set NULL if date is empty
+    $released_date_sql = ($released_date && $released_date !== '') ? "'$released_date'" : "NULL";
 
-	// Redirect to list
-	header("location: list-games.php");
+    // Build SQL statement including genre
+    $sql = "INSERT INTO videogames (game_name, game_desc, released_date, rating, genre)
+            VALUES ('$game_name', '$game_description', $released_date_sql, '$game_rating', '$genre')";
+
+    // Run SQL statement
+    if (!$mysqli->query($sql)) {
+        echo "<h4>SQL error: " . $mysqli->error . "</h4>";
+    } else {
+        // Redirect to index page after successful insert
+        header("Location: index.php");
+        exit();
+    }
+}
 ?>
