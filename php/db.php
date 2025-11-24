@@ -1,6 +1,7 @@
 <?php
 // Load database credentials from secure location
-require_once __DIR__ . "/../db_config.php";
+require_once("/home/stud/0/2432878/db_config.php");
+
 
 // Enable mysqli exceptions for better security & debugging
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
