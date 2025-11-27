@@ -7,10 +7,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
           crossorigin="anonymous">
+	<style>
+	/* Custom Styling for Dark Theme */
+      body {
+        background-color: #121212; /* Dark background for the body */
+        color: #f8f9fa; /* Light text for better contrast */
+      }
+
+	  .container {
+        background-color: #1e1e1e; /* Dark container background */
+        border-radius: 8px;
+        padding: 20px;
+      }
+	 </style>
  </head>
  <body>
     <div class="container mt-4">
         <h1>Add a Videogame</h1>
+		
         <form action="add-game.php" method="post">
 			<div class="mb-3">
                <label for="GameImage" class="form-label">Poster (paste image url)</label>
