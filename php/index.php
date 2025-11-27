@@ -3,94 +3,169 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ajax Game Search</title>
+    <title>Game Library</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* Custom Styling */
+      .game-card {
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .game-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .game-img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+
+      .game-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+      }
+
+      .game-desc {
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      .game-rating {
+        font-size: 1rem;
+        color: #f39c12;
+      }
+
+      .game-card-body {
+        padding: 15px;
+      }
+
+      /* Small Devices (Mobile) */
+      @media (max-width: 576px) {
+        .game-card {
+          margin-bottom: 1rem;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="container mt-4">
-      <h1 class="mb-4">Game Search</h1>
+      <h1 class="mb-4 text-center">Game Library</h1>
 
+      <!-- Search and Add Game Section -->
       <div class="d-flex justify-content-between mb-3">
         <form class="flex-grow-1 me-2">
-          <input type="text" class="form-control" id="searchBox" placeholder="Enter keywords...">
+          <input type="text" class="form-control" id="searchBox" placeholder="Search for games...">
         </form>
         <a href="add-game-form.php" class="btn btn-success">Add Game</a>
       </div>
 
-      <div id="results"></div>
+      <!-- Results Section -->
+      <div id="results" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"></div>
+    </div>
+
+    <!-- Modal for Deleting Game -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to delete this game?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" id="confirmDeleteBtn" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-    // Listen for key presses in the search box
-    document.getElementById("searchBox").addEventListener("keyup", () => doSearch(false));
+      // Listen for key presses in the search box
+      document.getElementById("searchBox").addEventListener("keyup", () => doSearch(false));
 
-    // Load all games on page load
-    window.onload = () => doSearch(true);
+      // Load all games on page load
+      window.onload = () => doSearch(true);
 
-    function doSearch(initialLoad = false) {
-      let keywords = document.getElementById("searchBox").value.trim();
+      let gameIdToDelete = null;
 
-      if (initialLoad) keywords = "";
+      function doSearch(initialLoad = false) {
+        let keywords = document.getElementById("searchBox").value.trim();
 
-      fetch('https://mi-linux.wlv.ac.uk/~2432878/year2/ajax.php?search=' + encodeURIComponent(keywords))
-        .then(response => response.json())
-        .then(response => {
-          const resultsDiv = document.getElementById("results");
-          resultsDiv.innerHTML = "";
+        if (initialLoad) keywords = "";
 
-          if (!response.length) {
-            resultsDiv.innerHTML = `<div class="alert alert-warning">No games found.</div>`;
-            return;
-          }
+        fetch('https://mi-linux.wlv.ac.uk/~2432878/year2/ajax.php?search=' + encodeURIComponent(keywords))
+          .then(response => response.json())
+          .then(response => {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
 
-          let tableHTML = `
-            <table class="table table-striped table-bordered align-middle">
-              <thead class="table-dark">
-                <tr>
-                  <th>Game Name</th>
-                  <th>Genre</th>
-                  <th>Rating</th>
-                  <th>Released</th>
-                  <th>Description</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-          `;
+            if (!response.length) {
+              resultsDiv.innerHTML = `<div class="alert alert-warning">No games found.</div>`;
+              return;
+            }
 
-          response.forEach(game => {
-            tableHTML += `
-              <tr>
-                <td>${game.game_name}</td>
-                <td>${game.genre || 'N/A'}</td>
-                <td>${game.rating || 'N/A'}</td>
-                <td>${game.released_date || 'Unknown'}</td>
-                <td>${game.game_desc || 'Unknown'}</td>
-                <td>
-                  <a class="btn btn-sm btn-primary" href="game-details.php?id=${game.game_id}">View</a>
-                  <a class="btn btn-sm btn-warning" href="update-game.php?id=${game.game_id}">Edit</a>
-                  <button class="btn btn-sm btn-danger" onclick="deleteGame(${game.game_id})">Delete</button>
-                </td>
-              </tr>
-            `;
+            let gameCardsHTML = '';
+
+            response.forEach(game => {
+              gameCardsHTML += `
+                <div class="col">
+                  <div class="card game-card shadow-sm">
+                    <img src="${game.game_image || 'https://via.placeholder.com/300x400'}" class="card-img-top game-img" alt="${game.game_name}">
+                    <div class="card-body game-card-body">
+                      <h5 class="card-title game-title">${game.game_name}</h5>
+                      <p class="card-text game-desc">${game.game_desc ? game.game_desc.substring(0, 100) + '...' : 'No description available.'}</p>
+                      <p class="game-rating">Rating: ${game.rating || 'N/A'}</p>
+                      <p class="text-muted">Released: ${game.released_date || 'Unknown'}</p>
+                      <div class="d-flex justify-content-between">
+                        <a class="btn btn-sm btn-primary" href="game-details.php?id=${game.game_id}">View</a>
+                        <a class="btn btn-sm btn-warning" href="update-game.php?id=${game.game_id}">Edit</a>
+                        <button class="btn btn-sm btn-danger" onclick="prepareDelete(${game.game_id})">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+
+            resultsDiv.innerHTML = gameCardsHTML;
+          })
+          .catch(err => {
+            document.getElementById("results").innerHTML = `<div class="alert alert-danger">Error fetching results.</div>`;
+            console.error(err);
           });
+      }
 
-          tableHTML += `</tbody></table>`;
-          resultsDiv.innerHTML = tableHTML;
-        })
-        .catch(err => {
-          document.getElementById("results").innerHTML = `<div class="alert alert-danger">Error fetching results.</div>`;
-          console.error(err);
-        });
-    }
+      // Prepare for deletion by setting the game ID
+      function prepareDelete(id) {
+        gameIdToDelete = id;
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+      }
 
-    function deleteGame(id) {
-      if (!confirm("Are you sure you want to delete this game?")) return;
+      // Confirm and delete the game
+      function confirmDelete() {
+        if (!gameIdToDelete) return;
 
-      fetch('delete-game.php?id=' + id)
-        .then(() => doSearch(true))
-        .catch(err => alert("Error deleting game"));
-    }
+        fetch('delete-game.php?id=' + gameIdToDelete)
+          .then(() => {
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.hide();
+            doSearch(true);  // Reload the game list
+          })
+          .catch(err => {
+            alert("Error deleting game");
+            console.error(err);
+          });
+      }
     </script>
+
+    <!-- Bootstrap JS and Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
   </body>
 </html>
