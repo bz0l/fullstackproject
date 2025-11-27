@@ -5,6 +5,7 @@ include("db.php"); // database connection
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Read and sanitize values from form
+    $game_image = isset($_POST['GameImage']) ? $mysqli->real_escape_string($_POST['GameImage']) : '';
     $game_name = isset($_POST['GameName']) ? $mysqli->real_escape_string($_POST['GameName']) : '';
     $game_description = isset($_POST['GameDescription']) ? $mysqli->real_escape_string($_POST['GameDescription']) : '';
     $released_date = isset($_POST['DateReleased']) ? $_POST['DateReleased'] : null; // YYYY-MM-DD
@@ -15,16 +16,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $released_date_sql = ($released_date && $released_date !== '') ? "'$released_date'" : "NULL";
 
     // Build SQL statement including genre
-    $sql = "INSERT INTO videogames (game_name, game_desc, released_date, rating, genre)
-            VALUES ('$game_name', '$game_description', $released_date_sql, '$game_rating', '$genre')";
+    $sql = "INSERT INTO videogames (game_image, game_name, game_desc, released_date, rating, genre)
+            VALUES ('$game_image', '$game_name', '$game_description', $released_date_sql, '$game_rating', '$genre')";
 
     // Run SQL statement
     if (!$mysqli->query($sql)) {
         echo "<h4>SQL error: " . $mysqli->error . "</h4>";
     } else {
-        // Redirect to index page after successful insert
-        header("Location: index.php");
-        exit();
-    }
+    // Redirect to index page after successful insert
+    header("Location: index.php?id=$id&updated=1");
+	exit;
+	
+	}
 }
 ?>
