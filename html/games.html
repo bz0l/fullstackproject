@@ -1,19 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>My games</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Games</title>
   </head>
   <body>
     <h1>My games webpage</h1>
+    
+    <!-- Include the navigation HTML file -->
     {{ include('navigation.html') }}
+
     <p>{{ num_rows }} record(s) were returned...</p>
-    <table border=1>
-    {% for item in results %}
-      <tr>
-        <td>{{ item.game_name }}</td>
-        <td>{{ item.released_date }}</td>
-      </tr>
-    {% endfor %}        
-    </table>        
+
+    <table border="1">
+      <!-- Loop through the results and display the data -->
+      {% for item in results %}
+        <tr>
+          <td>{{ item.game_name }}</td>
+          <td>{{ item.released_date }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+
   </body>
 </html>
