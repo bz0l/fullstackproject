@@ -12,6 +12,10 @@
     <div class="container mt-4">
         <h1>Add a Videogame</h1>
         <form action="add-game.php" method="post">
+			<div class="mb-3">
+               <label for="GameImage" class="form-label">Poster (paste image url)</label>
+               <input type="text" class="form-control" id="game_image" name="GameImage" required>
+            </div>
             <div class="mb-3">
                 <label for="GameName" class="form-label">Game Name</label>
                 <input type="text" class="form-control" id="game_name" name="GameName" required>
