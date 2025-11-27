@@ -6,39 +6,85 @@
     <title>Game Library</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-      /* Custom Styling */
+      /* Custom Styling for Dark Theme */
+      body {
+        background-color: #121212; /* Dark background for the body */
+        color: #f8f9fa; /* Light text for better contrast */
+      }
+
+	  .container {
+        background-color: #1e1e1e; /* Dark container background */
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #ffffff; /* White heading for contrast */
+        font-size: 2rem; /* Larger font size for better readability */
+      }
+
       .game-card {
         transition: transform 0.2s ease-in-out;
+        background-color: #2c2c2c; /* Dark card background */
+        border: none;
+        border-radius: 10px;
+        color: #e0e0e0; /* Ensuring the text inside cards is accessible */
       }
 
       .game-card:hover {
         transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
       }
 
       .game-img {
         width: 100%;
         height: auto;
         object-fit: cover;
+        border-radius: 10px;
       }
 
       .game-title {
-        font-size: 1.25rem;
+        font-size: 1.5rem; /* Larger title for visibility */
         font-weight: bold;
+        color: #ffffff; /* White text for headings */
       }
 
       .game-desc {
-        font-size: 0.9rem;
-        color: #555;
+        font-size: 1rem; /* Increased font size for readability */
+        color: #b0b0b0; /* Slightly muted color for description */
       }
 
       .game-rating {
+        font-size: 1.1rem; /* Larger text for rating */
+        color: #f39c12; /* Gold color for rating */
+      }
+
+      /* Make Released Date More Readable */
+      .game-released {
         font-size: 1rem;
-        color: #f39c12;
+        font-weight: bold;
+        color: #ffc107; /* Use a bright color for contrast */
+        background-color: #333333; /* Dark background for the text */
+        padding: 2px 8px; /* Add some padding for readability */
+        border-radius: 5px; /* Rounded corners */
       }
 
       .game-card-body {
         padding: 15px;
+      }
+
+      .btn {
+        border-radius: 5px;
+      }
+
+      /* Darker Modal */
+      .modal-content {
+        background-color: #2c2c2c;
+        color: #e0e0e0; /* Ensuring modal text is accessible */
+      }
+
+      .modal-header, .modal-footer {
+        border-bottom: 1px solid #444;
       }
 
       /* Small Devices (Mobile) */
@@ -47,6 +93,23 @@
           margin-bottom: 1rem;
         }
       }
+
+      /* Links and Buttons Contrast */
+      .btn, .card-title a {
+        color: #f8f9fa !important; /* Ensure links and buttons are readable */
+        font-weight: bold;
+        text-decoration: none; /* Make sure links are styled properly */
+      }
+
+      .btn:hover, .card-title a:hover {
+        color: #ffc107; /* Provide feedback on hover */
+      }
+
+      /* Add focus outline for accessibility */
+      .btn:focus, .card-title a:focus {
+        outline: 3px solid #ffbf47; /* Bright outline for focus visibility */
+      }
+
     </style>
   </head>
   <body>
@@ -56,9 +119,9 @@
       <!-- Search and Add Game Section -->
       <div class="d-flex justify-content-between mb-3">
         <form class="flex-grow-1 me-2">
-          <input type="text" class="form-control" id="searchBox" placeholder="Search for games...">
+          <input type="text" class="form-control" id="searchBox" placeholder="Search for games..." aria-label="Search for games">
         </form>
-        <a href="add-game-form.php" class="btn btn-success">Add Game</a>
+        <a href="add-game-form.php" class="btn btn-success" role="button" aria-label="Add a new game">Add Game</a>
       </div>
 
       <!-- Results Section -->
@@ -120,7 +183,7 @@
                       <h5 class="card-title game-title">${game.game_name}</h5>
                       <p class="card-text game-desc">${game.game_desc ? game.game_desc.substring(0, 100) + '...' : 'No description available.'}</p>
                       <p class="game-rating">Rating: ${game.rating || 'N/A'}</p>
-                      <p class="text-muted">Released: ${game.released_date || 'Unknown'}</p>
+                      <p class="game-released">Released: ${game.released_date || 'Unknown'}</p>
                       <div class="d-flex justify-content-between">
                         <a class="btn btn-sm btn-primary" href="game-details.php?id=${game.game_id}">View</a>
                         <a class="btn btn-sm btn-warning" href="update-game.php?id=${game.game_id}">Edit</a>
@@ -169,3 +232,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
   </body>
 </html>
+
