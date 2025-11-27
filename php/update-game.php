@@ -26,7 +26,8 @@ $game = $result->fetch_assoc();
 // 3. PROCESS FORM SUBMISSION
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $game_name     = $_POST['game_name'];
+    $game_image    = $_POST['game_image'];
+	$game_name     = $_POST['game_name'];
     $genre         = $_POST['genre'];
     $rating        = $_POST['rating'];
     $released_date = $_POST['released_date'];
@@ -34,18 +35,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $update = $mysqli->prepare(
         "UPDATE videogames
-         SET game_name=?, genre=?, rating=?, released_date=?, game_desc=?
+         SET game_image=?, game_name=?, genre=?, rating=?, released_date=?, game_desc=?
          WHERE game_id=?"
     );
 
     $update->bind_param(
-        "ssissi",
+        "sssissi",
+		$game_image,
         $game_name,
         $genre,
         $rating,
         $released_date,
         $game_desc,
-        $id
+        $id,
     );
 
     if ($update->execute()) {
@@ -75,6 +77,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <h1 class="mb-4">Update Game</h1>
 
     <form method="POST" class="card p-4 shadow-sm">
+	
+	<div class="mb-3">
+            <label class="form-label">Poster (paste url)</label>
+            <input type="text" name="game_image" class="form-control" 
+                   value="<?= htmlspecialchars($game['game_image']) ?>" required>
+        </div>
 
         <div class="mb-3">
             <label class="form-label">Game Name</label>
